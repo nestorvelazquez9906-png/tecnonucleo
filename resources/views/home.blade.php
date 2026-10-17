@@ -80,6 +80,41 @@
         </div>
     </section>
 
+    {{-- PRODUCTOS DESTACADOS --}}
+    <section class="container mx-auto px-6 mt-20">
+        <div class="flex justify-between items-end mb-8">
+            <div>
+                <h2 class="text-3xl font-black">Productos Destacados</h2>
+                <p class="text-gray-500">Los últimos productos agregados</p>
+            </div>
+            <a href="{{ route('productos') }}" class="text-blue-600 font-semibold hover:underline">Ver todos →</a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            @foreach ($productos as $producto)
+                <a href="{{ route('productos.show', $producto) }}"
+                   class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all group">
+                    <div class="bg-gradient-to-br from-slate-100 to-gray-200 h-40 flex items-center justify-center text-5xl">
+                        @php
+                            $emoji = match($producto->categoria->nombre ?? '') {
+                                'Celulares' => '📱',
+                                'Laptops' => '💻',
+                                'Audífonos' => '🎧',
+                                'Accesorios' => '⌨️',
+                                default => '📦',
+                            };
+                        @endphp
+                        {{ $emoji }}
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold group-hover:text-blue-600 transition">{{ $producto->nombre }}</h3>
+                        <p class="text-lg font-black text-slate-900 mt-1">${{ number_format($producto->precio, 0) }}</p>
+                    </div>
+                </a>
+            @endforeach
+        </div>
+    </section>
+
     {{-- CTA FINAL --}}
     <section class="container mx-auto px-6 mt-20">
         <div class="bg-gradient-to-r from-slate-900 to-blue-900 rounded-3xl p-12 text-center text-white shadow-2xl">
