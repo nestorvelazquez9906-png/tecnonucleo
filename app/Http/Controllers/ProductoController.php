@@ -9,82 +9,82 @@ use Illuminate\Support\Facades\Log;
 
 class ProductoController extends Controller
 {
-    /**
-     * Listar todos los productos
-     */
-    public function index()
+    public function index(Request $request)
     {
-        Log::info('Listando productos');
+        $query = Producto::with('categoria');
 
-        $productos = Producto::with('categoria')
-                             ->orderBy('created_at', 'desc')
-                             ->get();
+        // Búsqueda por nombre
+        if ($request->has('buscar') && $request->buscar != '') {
+            $query->where('nombre', 'LIKE', '%' . $request->buscar . '%');
+        }
 
-        return view('productos', compact('productos'));
+        // Filtro por categoría
+        if ($request->has('categoria') && $request->categoria != '') {
+            $query->where('categoria_id', $request->categoria);
+        }
+
+        // Paginación de 5 en 5 manteniendo filtros
+        $productos = $query->latest()->paginate(5)->withQueryString();
+        $categorias = Categoria::all();
+
+        return view('productos', compact('productos', 'categorias'));
     }
 
-    /**
-     * Mostrar formulario de creación
-     */
     public function create()
     {
-        $categorias = Categoria::orderBy('nombre')->get();
+        $categorias = Categoria::all();
         return view('crear-producto', compact('categorias'));
     }
 
-    /**
-     * Guardar producto en base de datos
-     */
     public function store(Request $request)
     {
-        Log::info('POST /productos recibido', [
-            'ip' => $request->ip(),
-            'datos' => $request->only('nombre', 'precio', 'categoria_id'),
-        ]);
-
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
-            'descripcion' => 'nullable|string',
             'precio' => 'required|numeric|min:0',
+            'descripcion' => 'nullable|string',
             'stock' => 'required|integer|min:0',
             'categoria_id' => 'required|exists:categorias,id',
         ]);
 
         $producto = Producto::create($validated);
 
-        Log::info('Producto creado en BD', [
-            'id' => $producto->id,
-            'nombre' => $producto->nombre,
-        ]);
-
-        return redirect()
-            ->route('productos')
-            ->with('status', "¡El producto '{$producto->nombre}' fue creado correctamente!");
+        return redirect()->route('productos')
+            ->with('status', "¡El producto '{$producto->nombre}' fue creado exitosamente!");
     }
 
-    /**
-     * Mostrar un producto específico
-     */
     public function show(Producto $producto)
     {
         return view('detalle-producto', compact('producto'));
     }
 
-    /**
-     * Eliminar producto
-     */
-    public function destroy(Producto $producto)
+    public function edit(Producto $producto)
     {
-        Log::info('Producto eliminado', [
-            'id' => $producto->id,
-            'nombre' => $producto->nombre,
+        $categorias = Categoria::all();
+        return view('editar-producto', compact('producto', 'categorias'));
+    }
+
+    public function update(Request $request, Producto $producto)
+    {
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:255',
+            'precio' => 'required|numeric|min:0',
+            'descripcion' => 'nullable|string',
+            'stock' => 'required|integer|min:0',
+            'categoria_id' => 'required|exists:categorias,id',
         ]);
 
+        $producto->update($validated);
+
+        return redirect()->route('productos')
+            ->with('status', "¡El producto '{$producto->nombre}' fue actualizado!");
+    }
+
+    public function destroy(Producto $producto)
+    {
         $nombre = $producto->nombre;
         $producto->delete();
 
-        return redirect()
-            ->route('productos')
+        return redirect()->route('productos')
             ->with('status', "El producto '{$nombre}' fue eliminado.");
     }
 }
