@@ -6,9 +6,13 @@ use App\Http\Controllers\CategoriaController;
 use App\Models\Producto;
 
 // ==========================================
-// RUTAS PÚBLICAS (Cualquiera puede ver)
+// RUTAS DE AUTENTICACIÓN
 // ==========================================
 require __DIR__.'/auth.php'; 
+
+// ==========================================
+// RUTAS PÚBLICAS (Cualquiera puede ver)
+// ==========================================
 Route::get('/', function () {
     $productos = Producto::with('categoria')->latest()->take(4)->get();
     return view('home', compact('productos'));
@@ -18,44 +22,32 @@ Route::get('/contacto', function () {
     return view('contacto');
 })->name('contacto');
 
-// Catálogo y detalle de producto (Accesibles sin iniciar sesión)
+// Catálogo
 Route::get('/productos', [ProductoController::class, 'index'])->name('productos');
-Route::get('/productos/{producto}', [ProductoController::class, 'show'])->name('productos.show');
 
-// Categorías y API JSON
+
+// Categorías
 Route::get('/categorias', [CategoriaController::class, 'index'])->name('categorias');
-Route::get('/api/productos', function () {
-    return response()->json([
-        'success' => true,
-        'data' => Producto::with('categoria')->get(),
-    ]);
-})->name('api.productos');
 
 
 // ==========================================
 // RUTAS PROTEGIDAS (Solo Administradores)
 // ==========================================
-// Requieren estar logueado ('auth') y ser administrador ('admin')
-
 Route::middleware(['auth', 'admin'])->group(function () {
     
-    // Rutas de Creación
+    // ¡IMPORTANTE! La ruta de crear DEBE ir antes que la de show
     Route::get('/productos/crear', [ProductoController::class, 'create'])->name('productos.crear');
     Route::post('/productos', [ProductoController::class, 'store'])->name('productos.store');
     
-    // Rutas de Edición
     Route::get('/productos/{producto}/editar', [ProductoController::class, 'edit'])->name('productos.edit');
     Route::put('/productos/{producto}', [ProductoController::class, 'update'])->name('productos.update');
     
-    // Ruta de Eliminación
     Route::delete('/productos/{producto}', [ProductoController::class, 'destroy'])->name('productos.destroy');
     
 });
 
 
 // ==========================================
-// RUTAS DE AUTENTICACIÓN (Laravel Breeze)
+// RUTA DE DETALLE (Debe ir al final para no chocar con /crear)
 // ==========================================
-// Estas rutas las crea Breeze automáticamente. 
-// Si Breeze te pidió agregar esta línea al final, déjala:
-require __DIR__.'/auth.php';
+Route::get('/productos/{producto}', [ProductoController::class, 'show'])->name('productos.show');

@@ -72,17 +72,37 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 @foreach ($productos as $producto)
                     <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
-                        <div class="relative bg-gradient-to-br from-slate-100 to-gray-200 h-56 flex items-center justify-center text-7xl">
-                            @php
-                                $emoji = match($producto->categoria->nombre ?? '') {
-                                    'Celulares' => '📱',
-                                    'Laptops' => '💻',
-                                    'Audífonos' => '🎧',
-                                    'Accesorios' => '⌨️',
-                                    default => '📦',
-                                };
-                            @endphp
-                            {{ $emoji }}
+                        <div class="relative bg-gradient-to-br from-slate-100 to-gray-200 h-56 flex items-center justify-center p-4">
+                                @php
+    // Mapeo de imágenes según el nombre del producto
+    $imagen = 'default.png';
+    $nombreLower = strtolower($producto->nombre);
+    
+    // Si el nombre contiene "laptop", usará la imagen asus-rog.png
+    if (str_contains($nombreLower, 'laptop') || str_contains($nombreLower, 'asus') || str_contains($nombreLower, 'rog')) {
+        $imagen = 'laptop.png'; 
+    }
+    elseif (str_contains($nombreLower, 'iphone') || str_contains($nombreLower, 'celular')) {
+        $imagen = 'celular.png'; // O 'iphone-15.png' si así se llama tu archivo
+    }
+    elseif (str_contains($nombreLower, 'sony') || str_contains($nombreLower, 'audifonos')) {
+        $imagen = 'sony-xm5.png';
+    }
+    elseif (str_contains($nombreLower, 'cargador')) {
+        $imagen = 'cargador-usb.png'; // Nota: en tu carpeta se llama cargador-usb, no cargador-usbc
+    }
+    elseif (str_contains($nombreLower, 'samsung') || str_contains($nombreLower, 's24')) {
+        $imagen = 'samsung-s24.png';
+    }
+    elseif (str_contains($nombreLower, 'macbook')) {
+        $imagen = 'macbook-air.png';
+    }
+@endphp
+                            
+                            <img src="{{ asset('images/productos/' . $imagen) }}" 
+                                 alt="{{ $producto->nombre }}" 
+                                 class="h-full w-auto object-contain hover:scale-110 transition-transform duration-300">
+                            
                             @if($producto->stock <= 5)
                                 <span class="absolute top-4 left-4 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">
                                     ¡Últimas {{ $producto->stock }}!

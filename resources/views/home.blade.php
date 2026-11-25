@@ -70,12 +70,13 @@
                 ['🎧', 'Audífonos', 'from-purple-500 to-purple-700'],
                 ['⌨️', 'Accesorios', 'from-orange-500 to-orange-700']
             ] as $c)
-                <div class="group cursor-pointer">
+                {{-- Convertimos el div en un enlace <a> que pasa el nombre de la categoría como parámetro --}}
+                <a href="{{ route('productos', ['buscar' => $c[1]]) }}" class="group cursor-pointer block">
                     <div class="bg-gradient-to-br {{ $c[2] }} rounded-2xl h-40 flex items-center justify-center text-6xl shadow-lg group-hover:scale-105 transition-transform">
                         {{ $c[0] }}
                     </div>
-                    <h3 class="font-bold mt-3 text-center">{{ $c[1] }}</h3>
-                </div>
+                    <h3 class="font-bold mt-3 text-center group-hover:text-blue-600 transition">{{ $c[1] }}</h3>
+                </a>
             @endforeach
         </div>
     </section>
@@ -94,18 +95,27 @@
             @foreach ($productos as $producto)
                 <a href="{{ route('productos.show', $producto) }}"
                    class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all group">
-                    <div class="bg-gradient-to-br from-slate-100 to-gray-200 h-40 flex items-center justify-center text-5xl">
+                    
+                    {{-- Contenedor de la imagen --}}
+                    <div class="bg-gradient-to-br from-slate-100 to-gray-200 h-40 flex items-center justify-center p-4 relative">
                         @php
-                            $emoji = match($producto->categoria->nombre ?? '') {
-                                'Celulares' => '📱',
-                                'Laptops' => '💻',
-                                'Audífonos' => '🎧',
-                                'Accesorios' => '⌨️',
-                                default => '📦',
-                            };
+                            // Mapeo de imágenes según el nombre del producto
+                            $imagen = 'default.png';
+                            $nombreLower = strtolower($producto->nombre);
+                            
+                            if (str_contains($nombreLower, 'laptop') || str_contains($nombreLower, 'asus') || str_contains($nombreLower, 'rog')) $imagen = 'laptop.png';
+                            elseif (str_contains($nombreLower, 'iphone') || str_contains($nombreLower, 'celular')) $imagen = 'celular.png';
+                            elseif (str_contains($nombreLower, 'sony') || str_contains($nombreLower, 'audifonos')) $imagen = 'sony-xm5.png';
+                            elseif (str_contains($nombreLower, 'cargador')) $imagen = 'cargador-usb.png';
+                            elseif (str_contains($nombreLower, 'samsung') || str_contains($nombreLower, 's24')) $imagen = 'samsung-s24.png';
+                            elseif (str_contains($nombreLower, 'macbook')) $imagen = 'macbook-air.png';
                         @endphp
-                        {{ $emoji }}
+                        
+                        <img src="{{ asset('images/productos/' . $imagen) }}" 
+                             alt="{{ $producto->nombre }}" 
+                             class="h-full w-auto object-contain group-hover:scale-110 transition-transform duration-300">
                     </div>
+                    
                     <div class="p-4">
                         <h3 class="font-bold group-hover:text-blue-600 transition">{{ $producto->nombre }}</h3>
                         <p class="text-lg font-black text-slate-900 mt-1">${{ number_format($producto->precio, 0) }}</p>

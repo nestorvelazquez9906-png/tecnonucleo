@@ -20,39 +20,43 @@
 </head>
 <body class="font-sans antialiased bg-gray-50 text-gray-900 min-h-screen flex flex-col">
 
-    {{-- ============ HEADER PERSONALIZADO ============ --}}
-    <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
+    {{-- ============ HEADER PERSONALIZADO (AHORA BLANCO) ============ --}}
+    <header class="bg-white shadow-md sticky top-0 z-50">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="{{ route('home') }}" class="flex items-center gap-2 text-2xl font-black tracking-tight">
-                <span class="bg-gradient-to-br from-cyan-400 to-blue-600 text-white p-2 rounded-xl">⚡</span>
-                Tecno<span class="text-cyan-400">Núcleo</span>
+            
+            {{-- LOGO EXTENDIDO EN EL HEADER --}}
+            <a href="{{ route('home') }}" class="flex items-center">
+                <img src="{{ asset('images/logo-horizontal.png') }}" 
+                     alt="TecnoNúcleo" 
+                     class="h-12 w-auto object-contain transition-transform hover:scale-105">
             </a>
 
             <nav class="hidden md:flex items-center space-x-6">
-                <a href="{{ route('home') }}" class="hover:text-cyan-400 transition">Inicio</a>
-                <a href="{{ route('productos') }}" class="hover:text-cyan-400 transition">Productos</a>
-                <a href="{{ route('contacto') }}" class="hover:text-cyan-400 transition">Contacto</a>
+                {{-- Enlaces de navegación con texto oscuro --}}
+                <a href="{{ route('home') }}" class="text-gray-700 font-semibold hover:text-blue-600 transition">Inicio</a>
+                <a href="{{ route('productos') }}" class="text-gray-700 font-semibold hover:text-blue-600 transition">Productos</a>
+                <a href="{{ route('contacto') }}" class="text-gray-700 font-semibold hover:text-blue-600 transition">Contacto</a>
                 
                 @auth
                     @if(auth()->user()->rol === 'admin')
-                        <a href="{{ route('productos.crear') }}" class="bg-cyan-500 hover:bg-cyan-600 px-4 py-2 rounded-lg font-semibold transition">
+                        <a href="{{ route('productos.crear') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition">
                             + Nuevo Producto
                         </a>
                     @endif
                     
                     {{-- Menú de Usuario Logueado --}}
-                    <div class="flex items-center gap-4 ml-6 border-l border-slate-700 pl-6">
-                        <span class="text-sm font-semibold text-cyan-400">👤 {{ Auth::user()->name }}</span>
+                    <div class="flex items-center gap-4 ml-6 border-l border-gray-300 pl-6">
+                        <span class="text-sm font-bold text-blue-600">👤 {{ Auth::user()->name }}</span>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button type="submit" class="text-sm text-gray-300 hover:text-red-400 transition">Cerrar Sesión</button>
+                            <button type="submit" class="text-sm text-gray-500 hover:text-red-500 transition font-semibold">Cerrar Sesión</button>
                         </form>
                     </div>
                 @else
                     {{-- Botones de Invitado --}}
-                    <div class="flex items-center gap-4 ml-6 border-l border-slate-700 pl-6">
-                        <a href="{{ route('login') }}" class="text-sm text-gray-300 hover:text-cyan-400 transition font-semibold">Iniciar Sesión</a>
-                        <a href="{{ route('register') }}" class="bg-white text-slate-900 hover:bg-gray-200 px-4 py-2 rounded-lg font-bold transition">Registrarse</a>
+                    <div class="flex items-center gap-4 ml-6 border-l border-gray-300 pl-6">
+                        <a href="{{ route('login') }}" class="text-sm text-gray-700 hover:text-blue-600 transition font-semibold">Iniciar Sesión</a>
+                        <a href="{{ route('register') }}" class="bg-slate-900 text-white hover:bg-slate-800 px-4 py-2 rounded-lg font-bold transition">Registrarse</a>
                     </div>
                 @endauth
             </nav>
@@ -65,21 +69,25 @@
     </main>
 
     {{-- ============ FOOTER PERSONALIZADO ============ --}}
+    {{-- Dejamos el footer oscuro para que haga contraste con la página --}}
     <footer class="bg-slate-900 text-gray-400 py-10 mt-20">
         <div class="container mx-auto px-6 grid md:grid-cols-3 gap-8">
             <div>
-                <div class="flex items-center gap-2 text-white text-xl font-black mb-3">
-                    <span class="bg-gradient-to-br from-cyan-400 to-blue-600 p-1.5 rounded-lg">⚡</span>
-                    TecnoNúcleo
+                {{-- Para el footer, si el logo es azul oscuro, no se verá bien. 
+                     Podrías poner una versión blanca del logo aquí, o dejarlo así si el fondo es claro --}}
+                <div class="mb-4 bg-white inline-block p-2 rounded-lg">
+                    <img src="{{ asset('images/logo-horizontal.png') }}" 
+                         alt="TecnoNúcleo" 
+                         class="h-10 w-auto object-contain">
                 </div>
-                <p class="text-sm">El núcleo de tu tecnología. Los mejores productos electrónicos al mejor precio.</p>
+                <p class="text-sm mt-2">El núcleo de tu tecnología. Los mejores productos electrónicos al mejor precio.</p>
             </div>
             <div>
                 <h4 class="text-white font-bold mb-3">Categorías</h4>
                 <ul class="space-y-2 text-sm">
-                    <li><a href="#" class="hover:text-cyan-400">Celulares</a></li>
-                    <li><a href="#" class="hover:text-cyan-400">Laptops</a></li>
-                    <li><a href="#" class="hover:text-cyan-400">Audífonos</a></li>
+                    <li><a href="#" class="hover:text-cyan-400 transition">Celulares</a></li>
+                    <li><a href="#" class="hover:text-cyan-400 transition">Laptops</a></li>
+                    <li><a href="#" class="hover:text-cyan-400 transition">Audífonos</a></li>
                 </ul>
             </div>
             <div>

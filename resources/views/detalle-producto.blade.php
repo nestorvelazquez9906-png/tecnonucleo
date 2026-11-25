@@ -7,10 +7,28 @@
         <a href="{{ route('productos') }}" class="text-blue-600 hover:underline font-semibold">← Volver a productos</a>
 
         <div class="grid md:grid-cols-2 gap-10 mt-6">
-            <div class="bg-gradient-to-br from-slate-100 to-gray-200 rounded-2xl h-96 flex items-center justify-center text-9xl shadow-md">
-                📦
+            
+            {{-- CONTENEDOR DE LA IMAGEN --}}
+            <div class="bg-gradient-to-br from-slate-100 to-gray-200 rounded-2xl h-96 flex items-center justify-center p-8 shadow-md">
+                @php
+                    // Mapeo de imágenes según el nombre del producto
+                    $imagen = 'default.png';
+                    $nombreLower = strtolower($producto->nombre);
+                    
+                    if (str_contains($nombreLower, 'laptop') || str_contains($nombreLower, 'asus') || str_contains($nombreLower, 'rog')) $imagen = 'laptop.png';
+                    elseif (str_contains($nombreLower, 'iphone') || str_contains($nombreLower, 'celular')) $imagen = 'celular.png';
+                    elseif (str_contains($nombreLower, 'sony') || str_contains($nombreLower, 'audifonos')) $imagen = 'sony-xm5.png';
+                    elseif (str_contains($nombreLower, 'cargador')) $imagen = 'cargador-usb.png';
+                    elseif (str_contains($nombreLower, 'samsung') || str_contains($nombreLower, 's24')) $imagen = 'samsung-s24.png';
+                    elseif (str_contains($nombreLower, 'macbook')) $imagen = 'macbook-air.png';
+                @endphp
+
+                <img src="{{ asset('images/productos/' . $imagen) }}" 
+                     alt="{{ $producto->nombre }}" 
+                     class="h-full w-auto object-contain hover:scale-105 transition-transform duration-300">
             </div>
 
+            {{-- INFORMACIÓN DEL PRODUCTO --}}
             <div>
                 <p class="text-cyan-600 font-bold uppercase text-sm mb-2">
                     {{ $producto->categoria->nombre }}
